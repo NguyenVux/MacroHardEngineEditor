@@ -1,0 +1,9 @@
+set(
+        SOURCE_FILES
+        "src/Application.cpp"
+        "src/Application.h"
+        "src/EntryPoint.cpp"
+)
+add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+message("lib targets: ${LIB_TARGETS}")
+target_link_libraries(${PROJECT_NAME} ${LIB_TARGETS} glm glfw)
