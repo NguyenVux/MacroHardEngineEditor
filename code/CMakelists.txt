@@ -1,9 +1,31 @@
 set(
         SOURCE_FILES
-        "src/Application.cpp"
-        "src/Application.h"
+        "src/GLFWApplication.cpp"
+        "src/GLFWApplication.h"
         "src/EntryPoint.cpp"
+        "src/Window/Window.h" 
+        "src/Window/Window.cpp"
+        "src/Window/DisplaySystem.h" 
+        "src/Window/DisplaySystem.cpp" 
+        "src/Logger/Logger.h" 
+        "src/Logger/Logger.cpp" 
+        "src/Graphic/Shader.h" 
+        "src/Graphic/Shader.cpp"
 )
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 message("lib targets: ${LIB_TARGETS}")
-target_link_libraries(${PROJECT_NAME} ${LIB_TARGETS} glm glfw)
+target_include_directories(${PROJECT_NAME} PRIVATE "src")
+
+target_precompile_headers(${PROJECT_NAME} PRIVATE 
+        "<memory>"
+        "<string>"
+        [["glad/gl.h"]] 
+        [["glfw/glfw3.h"]]
+        [["glm/glm.hpp"]]
+        [["glm/ext.hpp"]]
+        [["result.h"]]
+        [["signal.h"]]
+        [["Logger/Logger.h"]]
+)
+
+target_link_libraries(${PROJECT_NAME} ${LIB_TARGETS} glm glfw glad)
