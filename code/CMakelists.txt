@@ -1,9 +1,13 @@
 set(
         SOURCE_FILES
-        "src/Application.cpp"
-        "src/Application.h"
+        "src/GLFWApplication.cpp"
+        "src/GLFWApplication.h"
         "src/EntryPoint.cpp"
+        "src/Window/IWindow.h" 
+        "src/Window/Window.h" 
+        "src/Window/Window.cpp"
 )
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 message("lib targets: ${LIB_TARGETS}")
-target_link_libraries(${PROJECT_NAME} ${LIB_TARGETS} glm glfw)
+target_include_directories(${PROJECT_NAME} PRIVATE "src")
+target_link_libraries(${PROJECT_NAME} ${LIB_TARGETS} glm glfw glad)
