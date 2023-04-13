@@ -9,7 +9,7 @@ enum CreateShaderErrorCode {
 	CannotOpenShaderFile
 };
 using CreateShaderError = MHTL::error<CreateShaderErrorCode>;
-using CreateShaderResult = MHTL::result<Shader, CreateShaderError>;
+using CreateShaderResult = MHTL::result<std::unique_ptr<Shader>, CreateShaderError>;
 enum class ShaderType : GLenum
 {
 	FragmentShader = GL_FRAGMENT_SHADER,
@@ -22,5 +22,7 @@ private:
 	Shader(GLuint i_shaderId, ShaderType i_type);
 public:
 	static CreateShaderResult CreateShader(std::string i_path, ShaderType i_type);
+	GLuint GetShaderID();
+	~Shader();
 };
 }

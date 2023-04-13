@@ -10,8 +10,11 @@ set(
         "src/Logger/Logger.h" 
         "src/Logger/Logger.cpp" 
         "src/Graphic/Shader.h" 
-        "src/Graphic/Shader.cpp"
-)
+        "src/Graphic/Shader.cpp" 
+        "src/Graphic/ShaderProgram.h" 
+        "src/Graphic/ShaderProgram.cpp"
+        "src/Graphic/GlHelpers.cpp" 
+        "src/Graphic/GlHelpers.h" "src/Graphic/VAO.h" "src/Graphic/VAO.cpp")
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 message("lib targets: ${LIB_TARGETS}")
 target_include_directories(${PROJECT_NAME} PRIVATE "src")

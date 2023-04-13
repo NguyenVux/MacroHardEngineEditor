@@ -28,6 +28,11 @@ bool Window::ShouldClose()
 	return glfwWindowShouldClose(m_glfwWindow);
 }
 
+void Window::Close()
+{
+	glfwSetWindowShouldClose(m_glfwWindow, 1);
+}
+
 void Window::Present()
 {
 	if (m_glfwWindow == nullptr)

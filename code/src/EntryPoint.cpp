@@ -3,7 +3,12 @@
 #include "GLFWApplication.h"
 #include "Window/DisplaySystem.h"
 #include "Graphic/Shader.h"
+#include "Graphic/ShaderProgram.h"
 
+void glfwErrorCallBack(int error_code, const char* description)
+{
+	LOG_ERROR("[" + std::to_string(error_code) + "]" + description, "GLFW");
+}
 int main() {
 	Logger::LoggerSystem::InitLogger(std::make_unique<Logger::StdIOLogger>());
 
@@ -25,13 +30,7 @@ int main() {
 		}
 		win = createWindowResult.extract_payload();
 	}
-	auto r = Graphic::Shader::CreateShader("../../../../data/VertexShader.glsl", Graphic::ShaderType::VertexShader);
-	if (r != MHTL::success)
-	{
-		LOG_ERROR(r.error().what(),"MAIN");
-		return -3;
-	}
-	auto t = r.extract_payload();
+
 
 	std::unique_ptr<GLFWApplication> application = std::make_unique<GLFWApplication>(win);
 	std::chrono::steady_clock::time_point previousTime = std::chrono::steady_clock::now();

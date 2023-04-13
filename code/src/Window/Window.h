@@ -17,6 +17,7 @@ private:
 public:
 	Window(GLFWwindow* m_glfwWindow);
 	bool ShouldClose();
+	void Close();
 	void Present();
 	~Window();
 };

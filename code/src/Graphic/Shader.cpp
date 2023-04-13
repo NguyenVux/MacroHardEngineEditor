@@ -1,5 +1,5 @@
 #include "Shader.h"
-
+#include "GlHelpers.h"
 namespace Graphic
 {
 
@@ -27,14 +27,24 @@ CreateShaderResult Shader::CreateShader(std::string i_path, ShaderType i_type)
 	glGetShaderiv(shaderId, GL_COMPILE_STATUS, &compileStatus);
 	if (compileStatus == GL_FALSE)
 	{
-		char buffer[1000];
-		GLsizei outputLength;
-		glGetShaderInfoLog(shaderId,sizeof(buffer),&outputLength,buffer);
-		std::string compileMessage(buffer, outputLength);
-		return CreateShaderError(CreateShaderErrorCode::CompileError, compileMessage);
+		return CreateShaderError(CreateShaderErrorCode::CompileError, Helpers::GetShaderInfoLog(shaderId));
 	}
 
 
-	return Shader(shaderId, i_type);
+
+
+
+	return std::unique_ptr<Shader>(new Shader(shaderId, i_type));
+}
+GLuint Shader::GetShaderID()
+{
+	return m_shaderId;
+}
+Shader::~Shader()
+{
+	if (m_shaderId != 0)
+	{
+		glDeleteShader(m_shaderId);
+	}
 }
 }
