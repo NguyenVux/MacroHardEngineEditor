@@ -1,0 +1,6 @@
+[submodule "libs/MHTL"]
+    path = libs/MHTL
+    url = git@github.com:NguyenVux/MHTL.git
+[submodule "vendors/glfw"]
+    path = vendors/glfw
+    url = https://github.com/glfw/glfw
