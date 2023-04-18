@@ -1,10 +1,9 @@
 #version 330 core
-layout (location = 0) in vec2 aPos;
-layout (location = 1) in vec2 aTexCoord;
-
-out vec2 TexCoord;
+in vec3 position;
+uniform float z;
+uniform mat4 projectionMatrix;
 void main()
 {
-    gl_Position = vec4(aPos, 0.0f, 1.0f);
-	TexCoord = aTexCoord;
+    vec3 pos = position - vec3(0,z,5);
+    gl_Position = projectionMatrix*vec4(pos, 1.0);
 }

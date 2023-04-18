@@ -17,6 +17,7 @@ namespace Graphic
 		ShaderProgram();
 		LinkShaderProgramResult LinkProgram();
 		void AttachShader(std::unique_ptr<Shader> i_shader);
+		GLint GetUniformLocation(std::string i_name);
 		void Use();
 		~ShaderProgram();
 	};

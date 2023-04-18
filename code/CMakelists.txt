@@ -26,8 +26,8 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE
         [["glfw/glfw3.h"]]
         [["glm/glm.hpp"]]
         [["glm/ext.hpp"]]
-        [["result.h"]]
-        [["signal.h"]]
+        [["MHTL/result.h"]]
+        [["MHTL/signal.h"]]
         [["Logger/Logger.h"]]
 )
 

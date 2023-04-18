@@ -6,6 +6,12 @@ void Window::OnKeyEvent(GLFWwindow* window, int key, int scancode, int action, i
 	win->OnKeyEvent(key, scancode, action, mods);
 }
 
+void Window::OnResolutionChange(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	Window* win = static_cast<Window*>(glfwGetWindowUserPointer(window));
+	win->OnKeyEvent(key, scancode, action, mods);
+}
+
 
 
 void Window::OnKeyEvent(int key, int scancode, int action, int mods)
@@ -17,6 +23,7 @@ Window::Window(GLFWwindow* i_window): m_glfwWindow(i_window)
 {
 	glfwSetWindowUserPointer(m_glfwWindow, this);
 	glfwSetKeyCallback(m_glfwWindow, &Window::OnKeyEvent);
+	
 }
 
 bool Window::ShouldClose()
@@ -26,6 +33,18 @@ bool Window::ShouldClose()
 		return true;
 	}
 	return glfwWindowShouldClose(m_glfwWindow);
+}
+
+WindowSize Window::GetWindowSize()
+{
+	int width;
+	int height;
+	glfwGetWindowSize(m_glfwWindow,&width,&height);
+	WindowSize size = {
+		width,
+		height
+	};
+	return size;
 }
 
 void Window::Close()

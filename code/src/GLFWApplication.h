@@ -8,6 +8,8 @@ private:
 	std::shared_ptr<Window> m_window;
 	fteng::connection m_keyEventConnection;
 	Graphic::ShaderProgram m_shaderProgram;
+	GLuint VAO,VBO,EBO;
+
 public:
 	void Update(float dt);
 	void Start();

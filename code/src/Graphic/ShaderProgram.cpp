@@ -28,6 +28,10 @@ void ShaderProgram::AttachShader(std::unique_ptr<Shader> i_shader)
 	m_usedShader.push_back(std::move(i_shader));
 	LOG_DEBUG("std::move(std::unique<Shader>)", "GRAPHIC::ShaderProgram");
 }
+GLint ShaderProgram::GetUniformLocation(std::string i_name)
+{
+	return glGetUniformLocation(m_progId, i_name.c_str());
+}
 void ShaderProgram::Use()
 {
 	glUseProgram(m_progId);
