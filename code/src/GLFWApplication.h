@@ -1,6 +1,8 @@
 #pragma once
 #include "Window/Window.h"
 #include "Graphic/ShaderProgram.h"
+#include "Graphic/Camera.h"
+
 class GLFWApplication {
 protected:
 	struct AccessKey;
@@ -8,6 +10,7 @@ private:
 	std::shared_ptr<Window> m_window;
 	fteng::connection m_keyEventConnection;
 	Graphic::ShaderProgram m_shaderProgram;
+	Graphic::Camera m_mainCam;
 	GLuint VAO,VBO,EBO;
 
 public:

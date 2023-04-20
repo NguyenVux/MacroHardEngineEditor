@@ -3,8 +3,8 @@
 #include <iostream>
 #include <fstream>
 #include "Graphic/GlHelpers.h"
+#include "glm/gtx/quaternion.hpp"
 const std::string s_rootPath = "..\\..\\..\\..\\";
-
 
 // Define the vertices of the cube
 	static std::array<glm::vec3, 8> cube = {
@@ -35,10 +35,15 @@ void GLFWApplication::Update(float dt)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glBindVertexArray(VAO);
 	m_shaderProgram.Use();
-	auto pos = m_shaderProgram.GetUniformLocation("z");
-	float z = (glm::sin(glfwGetTime())+1)*3;
-	
-	glUniform1f(pos, z);
+	GLint prjPos = m_shaderProgram.GetUniformLocation("projectionMatrix");
+	GLint mPos = m_shaderProgram.GetUniformLocation("ModelMatrix");
+
+	//auto modelMatrix = glm::translate(glm::identity<glm::mat4>(), glm::vec3(0.0f, 0.0f, -3.0f))* glm::toMat4(glm::qua<float>(glm::radians(glm::highp_vec3(0, glm::sin(glfwGetTime()) * 360 ,0))));
+	auto modelMatrix = glm::mat4(1.0f);
+	//auto viewMatrix = glm::translate(glm::identity<glm::mat4>(), glm::vec3(0.0f, 0.0f,-3.0f)) * glm::toMat4(glm::qua<float>(glm::radians(glm::highp_vec3(glm::sin(glfwGetTime()/100)*360,0,0))));
+	m_mainCam.rotate(00.0f, glm::radians(10*dt), 0.0f);
+	glUniformMatrix4fv(prjPos, 1, GL_FALSE, glm::value_ptr(m_mainCam.getMatrix()));
+	glUniformMatrix4fv(mPos, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 	glDrawElements(GL_TRIANGLES, faces.size(), GL_UNSIGNED_INT, 0);
 
 	m_window->Present();
@@ -99,12 +104,13 @@ void GLFWApplication::Start()
 	float farPlane = 100000.0f;
 
 	// Create perspective projection matrix
-	glm::mat4 projectionMatrix = glm::perspective(fov, aspectRatio, nearPlane, farPlane);
-
+	m_mainCam.setProjectionMatrix(fov, aspectRatio, nearPlane, farPlane);
+	m_mainCam.setPosition(glm::vec3(0.0f, 0.0f, -3.0f));
+	//m_mainCam.setRotation(glm::vec3(0.0f, 0.0f, 0.0f));
 	// Use the projectionMatrix in your OpenGL code, e.g. pass it to the shader
 	m_shaderProgram.Use();
-	auto pos = m_shaderProgram.GetUniformLocation("projectionMatrix");
-	glUniformMatrix4fv(pos, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+	
+
 	auto erro = glGetError();
 	if (erro != GL_NO_ERROR)
 	{

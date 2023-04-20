@@ -2,8 +2,8 @@
 in vec3 position;
 uniform float z;
 uniform mat4 projectionMatrix;
+uniform mat4 ModelMatrix;
 void main()
 {
-    vec3 pos = position - vec3(0,z,5);
-    gl_Position = projectionMatrix*vec4(pos, 1.0);
+    gl_Position = projectionMatrix*ModelMatrix*vec4(position, 1.0);
 }

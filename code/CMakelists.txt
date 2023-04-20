@@ -14,7 +14,9 @@ set(
         "src/Graphic/ShaderProgram.h" 
         "src/Graphic/ShaderProgram.cpp"
         "src/Graphic/GlHelpers.cpp" 
-        "src/Graphic/GlHelpers.h" "src/Graphic/VAO.h" "src/Graphic/VAO.cpp")
+        "src/Graphic/GlHelpers.h" 
+        "src/Graphic/Camera.h" 
+        "src/Graphic/Camera.cpp")
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 message("lib targets: ${LIB_TARGETS}")
 target_include_directories(${PROJECT_NAME} PRIVATE "src")
