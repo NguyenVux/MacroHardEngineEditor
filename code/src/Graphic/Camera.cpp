@@ -3,18 +3,19 @@
 
 namespace Graphic
 {
-	Camera::Camera() : position(glm::zero<glm::vec3>()), rotation(glm::zero<glm::vec3>()), m_cacheMatrix(0.0f), m_projectionMatrix(0.0f)
+	Camera::Camera() : m_cacheMatrix(0.0f), m_projectionMatrix(0.0f)
 	{
 	}
 	void Camera::rotate(glm::vec3 i_dir)
 	{
 		isCamMatrixDirty = true;
-		rotation += i_dir;
+		m_transform.Rotate(-i_dir, TransformComponent::TransformMode::GLOBAL_COORD);
 	}
 	void Camera::translate(glm::vec3 i_dir)
 	{
 		isCamMatrixDirty = true;
-		position -= i_dir;
+		i_dir.z = -i_dir.z;
+		m_transform.Translate(i_dir, TransformComponent::TransformMode::LOCAL_COORD);
 	}
 	const glm::mat4& Camera::getMatrix()
 	{
@@ -27,13 +28,8 @@ namespace Graphic
 		{
 			return;
 		}
-		glm::vec3 direction;
-		direction.x = sin(glm::radians(rotation.y)) * cos(glm::radians(rotation.x));
-		direction.y = sin(glm::radians(rotation.x));
-		direction.z = cos(glm::radians(rotation.y)) * cos(glm::radians(rotation.x));
-
-		glm::mat4 view_matrix = glm::lookAt(position,position+direction ,glm::vec3(0.0f, 1.0f, 0.0f));
-		m_cacheMatrix = m_projectionMatrix*view_matrix;
+		glm::mat4 aview_matrix = glm::mat4(m_transform.GetAxis());
+		m_cacheMatrix = m_projectionMatrix* aview_matrix*glm::translate(glm::mat4(1.0f),-m_transform.GetPosition());
 		isCamMatrixDirty = false;
 	}
 
@@ -45,23 +41,12 @@ namespace Graphic
 	void Camera::setPosition(glm::vec3 i_pos)
 	{
 		isCamMatrixDirty = true;
-		position = i_pos;
+		m_transform.SetPosition(i_pos);
 	}
 
 	void Camera::setRotation(glm::vec3 i_rot)
 	{
 		isCamMatrixDirty = true;
-		rotation = i_rot;
-	}
-	void Camera::LookAt(glm::vec3 i_pos)
-	{
-		isCamMatrixDirty = true;
-		glm::vec3 direction = glm::normalize(i_pos - position);
-
-		rotation.x = asin(direction.y);
-		rotation.y = asin(direction.x / cos(rotation.x));
-		rotation.z = 0.0f;
-
-		rotation = glm::degrees(rotation);
+		m_transform.SetRotation(i_rot);
 	}
 }

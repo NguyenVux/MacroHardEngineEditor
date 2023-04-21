@@ -22,7 +22,7 @@ int main() {
 	std::shared_ptr<Window> win;
 	{
 		DisplaySystem displaySystem;
-		auto createWindowResult = displaySystem.CreateWindow("Hello World", 800, 600);
+		auto createWindowResult = displaySystem.CreateWindow("Hello World", 1280, 720);
 		if (createWindowResult != MHTL::success)
 		{
 			LOG_ERROR("Failed to create window", "MAIN");

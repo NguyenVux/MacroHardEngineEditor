@@ -10,8 +10,10 @@ private:
 	std::shared_ptr<Window> m_window;
 	fteng::connection m_keyEventConnection;
 	Graphic::ShaderProgram m_shaderProgram;
+	Graphic::ShaderProgram m_gizmoShaderProgram;
 	Graphic::Camera m_mainCam;
 	GLuint VAO,VBO,EBO;
+	GLuint GizmoVAO;
 
 public:
 	void Update(float dt);
