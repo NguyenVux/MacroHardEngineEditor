@@ -3,20 +3,18 @@
 
 namespace Graphic
 {
-	Camera::Camera() : position(glm::zero<glm::vec3>()), angular_velocity(glm::zero<glm::vec3>())
+	Camera::Camera() : position(glm::zero<glm::vec3>()), rotation(glm::zero<glm::vec3>()), m_cacheMatrix(0.0f), m_projectionMatrix(0.0f)
 	{
 	}
-	void Camera::rotate(float i_pitch, float i_yaw, float i_roll)
+	void Camera::rotate(glm::vec3 i_dir)
 	{
 		isCamMatrixDirty = true;
-		angular_velocity.x += i_pitch;
-		angular_velocity.y += i_yaw;
-		angular_velocity.z += i_roll;
+		rotation += i_dir;
 	}
 	void Camera::translate(glm::vec3 i_dir)
 	{
 		isCamMatrixDirty = true;
-		position += i_dir;
+		position -= i_dir;
 	}
 	const glm::mat4& Camera::getMatrix()
 	{
@@ -25,13 +23,17 @@ namespace Graphic
 	}
 
 	void Camera::calculateCameraMatrix() {
-		if (!isCamMatrixDirty && glm::length2(angular_velocity) > 0.0001f)
+		if (!isCamMatrixDirty)
 		{
 			return;
 		}
-		auto rot = glm::toMat4(glm::qua<float>(angular_velocity));
-		auto translate = glm::translate(glm::mat4(1.0f), position);
-		m_cacheMatrix = m_projectionMatrix * translate *rot;
+		glm::vec3 direction;
+		direction.x = sin(glm::radians(rotation.y)) * cos(glm::radians(rotation.x));
+		direction.y = sin(glm::radians(rotation.x));
+		direction.z = cos(glm::radians(rotation.y)) * cos(glm::radians(rotation.x));
+
+		glm::mat4 view_matrix = glm::lookAt(position,position+direction ,glm::vec3(0.0f, 1.0f, 0.0f));
+		m_cacheMatrix = m_projectionMatrix*view_matrix;
 		isCamMatrixDirty = false;
 	}
 
@@ -44,5 +46,22 @@ namespace Graphic
 	{
 		isCamMatrixDirty = true;
 		position = i_pos;
+	}
+
+	void Camera::setRotation(glm::vec3 i_rot)
+	{
+		isCamMatrixDirty = true;
+		rotation = i_rot;
+	}
+	void Camera::LookAt(glm::vec3 i_pos)
+	{
+		isCamMatrixDirty = true;
+		glm::vec3 direction = glm::normalize(i_pos - position);
+
+		rotation.x = asin(direction.y);
+		rotation.y = asin(direction.x / cos(rotation.x));
+		rotation.z = 0.0f;
+
+		rotation = glm::degrees(rotation);
 	}
 }

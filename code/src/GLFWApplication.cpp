@@ -39,9 +39,9 @@ void GLFWApplication::Update(float dt)
 	GLint mPos = m_shaderProgram.GetUniformLocation("ModelMatrix");
 
 	//auto modelMatrix = glm::translate(glm::identity<glm::mat4>(), glm::vec3(0.0f, 0.0f, -3.0f))* glm::toMat4(glm::qua<float>(glm::radians(glm::highp_vec3(0, glm::sin(glfwGetTime()) * 360 ,0))));
-	auto modelMatrix = glm::mat4(1.0f);
+	auto modelMatrix = glm::translate(glm::mat4(1.0f),glm::vec3(0.0f,0.0f,10.f));
 	//auto viewMatrix = glm::translate(glm::identity<glm::mat4>(), glm::vec3(0.0f, 0.0f,-3.0f)) * glm::toMat4(glm::qua<float>(glm::radians(glm::highp_vec3(glm::sin(glfwGetTime()/100)*360,0,0))));
-	m_mainCam.rotate(00.0f, glm::radians(10*dt), 0.0f);
+	/*m_mainCam.rotate(glm::vec3(0.0f, 0.0f, 0.0f));*/
 	glUniformMatrix4fv(prjPos, 1, GL_FALSE, glm::value_ptr(m_mainCam.getMatrix()));
 	glUniformMatrix4fv(mPos, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 	glDrawElements(GL_TRIANGLES, faces.size(), GL_UNSIGNED_INT, 0);
@@ -105,8 +105,9 @@ void GLFWApplication::Start()
 
 	// Create perspective projection matrix
 	m_mainCam.setProjectionMatrix(fov, aspectRatio, nearPlane, farPlane);
-	m_mainCam.setPosition(glm::vec3(0.0f, 0.0f, -3.0f));
-	//m_mainCam.setRotation(glm::vec3(0.0f, 0.0f, 0.0f));
+	m_mainCam.setPosition(glm::vec3(0.0f, 0.0f, 9.0f));
+	m_mainCam.setRotation(glm::vec3(0.0f,0.0f,0.0f));
+	//m_mainCam.LookAt(glm::vec3(-35.f, 0.f, 0.f));
 	// Use the projectionMatrix in your OpenGL code, e.g. pass it to the shader
 	m_shaderProgram.Use();
 	
@@ -120,6 +121,42 @@ void GLFWApplication::Start()
 
 void GLFWApplication::OnKeyEvent(int key, int scancode, int action, int mods)
 {
+	glm::vec3 rot(0.0f);
+	if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
+
+		rot.x = 3.0f;
+	}	
+	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
+
+		rot.x = -3.0f;
+	}	
+	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
+
+		rot.y = 3.0f;
+	}	
+	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
+		rot.y = -3.0f;
+	}
+	m_mainCam.rotate(rot);
+
+
+	glm::vec3 dir(0.0f);
+	if (key == GLFW_KEY_W && action == GLFW_PRESS) {
+
+		dir.z = 1.0f;
+	}	
+	if (key == GLFW_KEY_S && action == GLFW_PRESS) {
+
+		dir.z = -1.0f;
+	}	
+	if (key == GLFW_KEY_A && action == GLFW_PRESS) {
+
+		dir.x = -1.0f;
+	}	
+	if (key == GLFW_KEY_D && action == GLFW_PRESS) {
+		dir.x = 1.0f;
+	}
+	m_mainCam.translate(dir);
 }
 
 GLFWApplication::GLFWApplication(std::shared_ptr<Window> i_window) : m_window(i_window)
