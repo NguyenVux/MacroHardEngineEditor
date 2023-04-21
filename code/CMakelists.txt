@@ -16,7 +16,7 @@ set(
         "src/Graphic/GlHelpers.cpp" 
         "src/Graphic/GlHelpers.h" 
         "src/Graphic/Camera.h" 
-        "src/Graphic/Camera.cpp" "src/Graphic/Transform.h" "src/Graphic/Transform.cpp")
+        "src/Graphic/Camera.cpp" "src/Graphic/Transform.h" "src/Graphic/Transform.cpp" "src/Graphic/Gizmo.h" "src/Graphic/Gizmo.cpp" "src/Graphic/IDrawable.h")
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 message("lib targets: ${LIB_TARGETS}")
 target_include_directories(${PROJECT_NAME} PRIVATE "src")

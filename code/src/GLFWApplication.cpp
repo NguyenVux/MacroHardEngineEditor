@@ -31,21 +31,11 @@ const std::string s_rootPath = "..\\..\\..\\..\\";
 		4, 5, 1,4, 1, 0  // Bottom face
 	};
 
-	static std::array<glm::vec3,4> gizmo = {
-		glm::vec3(0.0f,0.0f, 0.0f), // Vertex 0
-		glm::vec3(10.0f,0.0f, 0.0f), // Vertex 0
-		glm::vec3(0.0f,10.0f, 0.0f), // Vertex 0
-		glm::vec3(0.0f,0.0f, 10.0f), // Vertex 0
-	};
 
 
 
 	// Define the faces of the cube using vertex indices
-	static std::array<GLuint, 2 * 3> lines = {
-		0,1,
-		0,2,
-		0,3
-	};
+
 	
 	Graphic::TransformComponent transform;
 
@@ -66,30 +56,11 @@ void GLFWApplication::Update(float dt)
 		//m_mainCam.LookAt(glm::vec3(0.0f, 0.f, 0.f));
 		//m_mainCam.translate(glm::vec3(-2.f*dt, 0.f,0.0f));
 		//m_mainCam.rotate(glm::vec3(0.0f, 10.0f, 0.0f));
-		glUniformMatrix4fv(prjPos, 1, GL_FALSE, glm::value_ptr(m_mainCam.getMatrix()));
+		glUniformMatrix4fv(prjPos, 1, GL_FALSE, glm::value_ptr(m_mainCam->getMatrix()));
 		glUniformMatrix4fv(mPos, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 		glDrawElements(GL_TRIANGLES, faces.size(), GL_UNSIGNED_INT, 0);
 	}
-
-	{
-		//glDisable(GL_DEPTH_TEST);
-		m_gizmoShaderProgram.Use();
-		glBindVertexArray(GizmoVAO);
-		GLint prjPos = m_gizmoShaderProgram.GetUniformLocation("projectionMatrix");
-		GLint colorPos = m_gizmoShaderProgram.GetUniformLocation("uvert_c");
-		glUniformMatrix4fv(prjPos, 1, GL_FALSE, glm::value_ptr(m_mainCam.getMatrix()));
-
-		int pos = 0;
-		glUniform4fv(colorPos, 1, glm::value_ptr(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)));
-		glDrawElements(GL_LINES, 2, GL_UNSIGNED_INT, reinterpret_cast<void*>(0));
-		pos += 2;
-		glUniform4fv(colorPos, 1, glm::value_ptr(glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)));
-		glDrawElements(GL_LINES, 2, GL_UNSIGNED_INT, reinterpret_cast<void*>(2 * sizeof(GLuint)));
-		pos += 2;
-		glUniform4fv(colorPos, 1, glm::value_ptr(glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)));
-		glDrawElements(GL_LINES, 2, GL_UNSIGNED_INT, reinterpret_cast<void*>(4 * sizeof(GLuint)));
-		//glEnable(GL_DEPTH_TEST);
-	}
+	m_gizmo->Draw();
 	m_window->Present();
 }
 
@@ -123,29 +94,7 @@ void GLFWApplication::Start()
 	}
 	
 	{
-		auto v = Graphic::Shader::CreateShader("../../../../data/gizmoVert.glsl", Graphic::ShaderType::VertexShader);
-		auto s = Graphic::Shader::CreateShader("../../../../data/gizmoFrag.glsl", Graphic::ShaderType::FragmentShader);
-		if (v != MHTL::success)
-		{
-			LOG_ERROR(v.error().what(), "GLFWApplication");
-			m_window->Close();
-			return;
-		}
-		if (s != MHTL::success)
-		{
-			LOG_ERROR(s.error().what(), "GLFWApplication");
-			m_window->Close();
-			return;
-		}
-		m_gizmoShaderProgram.AttachShader(v.extract_payload());
-		m_gizmoShaderProgram.AttachShader(s.extract_payload());
-		auto r = m_gizmoShaderProgram.LinkProgram();
-		if (r != MHTL::success)
-		{
-			LOG_ERROR(r.error().what(), "GLFWApplication");
-			m_window->Close();
-			return;
-		}
+
 	}
 	
 	glEnable(GL_DEPTH_TEST);
@@ -167,42 +116,17 @@ void GLFWApplication::Start()
 	glEnableVertexAttribArray(0);
 	
 
-	GLuint GizmoVBO;
-	GLuint GizmoEBO;
-	glGenVertexArrays(1, &GizmoVAO);
-	glBindVertexArray(GizmoVAO);
-	glGenBuffers(1, &GizmoVBO);
-	glBindBuffer(GL_ARRAY_BUFFER, GizmoVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(gizmo), gizmo.data(), GL_STATIC_DRAW);
 
-	glGenBuffers(1, &GizmoEBO);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GizmoEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(lines), lines.data(), GL_STATIC_DRAW);
-
-	m_gizmoShaderProgram.Use();
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (GLvoid*)0);
-	glEnableVertexAttribArray(0);
-
-	// Field of view (FOV) in radians
-	constexpr float fov = glm::radians(70.0f);
-
-	// Aspect ratio (width / height)
+	m_mainCam = std::make_shared<Graphic::Camera>();
+	m_gizmo = std::make_unique<Graphic::Gizmo>(m_mainCam);
 	WindowSize size = m_window->GetWindowSize();
-	float aspectRatio = static_cast<float>(size.width)/size.height;
+	m_mainCam->setProjectionMatrix(glm::radians(70.0f), static_cast<float>(size.width) / size.height, 0.1f, 100000.0f);
+	m_mainCam->setPosition(glm::vec3(0.0f, 0.0f, +10.0f));
+	m_mainCam->setRotation(glm::vec3(0.0f,0.0,0.0f));
 
-	// Near and far clipping planes
-	float nearPlane = 0.1f;
-	float farPlane = 100000.0f;
-
-	// Create perspective projection matrix
-	m_mainCam.setProjectionMatrix(fov, aspectRatio, nearPlane, farPlane);
-	m_mainCam.setPosition(glm::vec3(0.0f, 0.0f, +10.0f));
-	m_mainCam.setRotation(glm::vec3(0.0f,0.0,0.0f));
 	transform.SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 	transform.SetRotation(glm::vec3(-45.0f, 0.0f, -45.0f));
 
-	//m_mainCam.LookAt(glm::vec3(-35.f, 0.f, 0.f));
-	// Use the projectionMatrix in your OpenGL code, e.g. pass it to the shader
 	
 
 	auto erro = glGetError();
@@ -237,7 +161,7 @@ void GLFWApplication::OnKeyEvent(int key, int scancode, int action, int mods)
 	if (key == GLFW_KEY_X && action == GLFW_PRESS) {
 		rot.z = -3.0f;
 	}
-	m_mainCam.rotate(rot);
+	m_mainCam->rotate(rot);
 
 
 	glm::vec3 dir(0.0f);
@@ -263,7 +187,7 @@ void GLFWApplication::OnKeyEvent(int key, int scancode, int action, int mods)
 	if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
 		dir.y = 1.0f;
 	}
-	m_mainCam.translate(dir);
+	m_mainCam->translate(dir);
 
 }
 
