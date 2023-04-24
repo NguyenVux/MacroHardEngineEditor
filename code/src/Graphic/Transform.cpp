@@ -4,25 +4,19 @@
 namespace Graphic {
 	void TransformComponent::UpdateAxis()
 	{
-		glm::mat4 rotMat = glm::toMat4(glm::quat(glm::radians(m_rotation)));
-		m_front.x = rotMat[0][2];
-		m_front.y = rotMat[1][2];
-		m_front.z = rotMat[2][2];
-
-		m_up.x = rotMat[0][1];
-		m_up.y = rotMat[1][1];
-		m_up.z = rotMat[2][1];
-
-		m_right.x = rotMat[0][0];
-		m_right.y = rotMat[1][0];
-		m_right.z = rotMat[2][0];
+		m_quatRotation = glm::quat(glm::radians(m_rotation));
+		m_right = glm::vec3(1.0f, 0.0f, 0.0f) * m_quatRotation;
+		m_up = glm::vec3(0.0f, 1.0f, 0.0f) * m_quatRotation;
+		m_front = glm::vec3(0.0f, 0.0f, 1.0f) * m_quatRotation;
+		
 	}
 	TransformComponent::TransformComponent():
 		m_rotation(0.0f),
 		m_position(0.0f),
 		m_front(0.0f),
 		m_right(0.0f),
-		m_up(0.0f)
+		m_up(0.0f),
+		m_quatRotation(m_rotation)
 	{
 
 	}
@@ -35,19 +29,27 @@ namespace Graphic {
 			return;
 		}
 
-		m_position += m_front * i_direction.z;
-		m_position += m_up * i_direction.y;
-		m_position += m_right * i_direction.x;
+		m_position +=  m_quatRotation*i_direction;
 	
 	}
-	void TransformComponent::Rotate(glm::vec3 i_rot, TransformMode i_mode = TransformMode::GLOBAL_COORD)
+	void TransformComponent::Rotate(glm::vec3 i_rot, TransformMode i_mode)
 	{
-		m_rotation += i_rot;
+		if (i_mode == TransformMode::GLOBAL_COORD)
+		{
+			m_rotation += i_rot;
+			UpdateAxis();
+			return;
+		}
+		glm::quat r(glm::radians(i_rot));
+		m_rotation = glm::degrees(glm::eulerAngles(m_quatRotation * r));
 		UpdateAxis();
 	}
 	void TransformComponent::SetPosition(glm::vec3 i_direction)
 	{
 		m_position = i_direction;
+	}
+	void TransformComponent::SetBaseAxis(glm::mat4 i_axis) const
+	{
 	}
 	void TransformComponent::SetRotation(glm::vec3 i_rot)
 	{
@@ -62,22 +64,12 @@ namespace Graphic {
 	{
 		return m_rotation;
 	}
-	glm::mat3 TransformComponent::GetAxis() const
+	const glm::vec3& TransformComponent::GetFront() const
 	{
-		glm::mat3 m(1.0f);
-		m[0][0] = m_right.x; // First column, first row
-		m[1][0] = m_right.y;
-		m[2][0] = m_right.z;
-		m[0][1] = m_up.x; // First column, second row
-		m[1][1] = m_up.y;
-		m[2][1] = m_up.z;
-		m[0][2] = m_front.x; // First column, third row
-		m[1][2] = m_front.y;
-		m[2][2] = m_front.z;
-		return m;
-		/*return glm::mat3(
-			m_right, 
-			m_up, 
-			m_front);*/
+		return m_front;
+	}
+	glm::mat4 TransformComponent::GetRotationMatrix() const
+	{
+		return glm::toMat4(m_quatRotation);
 	}
 }

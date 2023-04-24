@@ -49,8 +49,8 @@ void GLFWApplication::Update(float dt)
 		GLint mPos = m_shaderProgram.GetUniformLocation("ModelMatrix");
 
 		//auto modelMatrix = glm::translate(glm::identity<glm::mat4>(), glm::vec3(0.0f, 0.0f, -3.0f))* glm::toMat4(glm::qua<float>(glm::radians(glm::highp_vec3(0, glm::sin(glfwGetTime()) * 360 ,0))));
-		transform.Translate(glm::vec3((sin(glfwGetTime())/2), 0.0f,0.0f ),Graphic::TransformComponent::TransformMode::LOCAL_COORD);
-		auto modelMatrix = glm::translate(glm::mat4(1.0f),transform.GetPosition());
+		transform.Translate(glm::vec3(-0.5f*dt,0.0f,0.0f),Graphic::TransformComponent::TransformMode::LOCAL_COORD);
+		auto modelMatrix = glm::translate(glm::mat4(1.0f),transform.GetPosition())* transform.GetRotationMatrix();
 		//auto viewMatrix = glm::translate(glm::identity<glm::mat4>(), glm::vec3(0.0f, 0.0f,-3.0f)) * glm::toMat4(glm::qua<float>(glm::radians(glm::highp_vec3(glm::sin(glfwGetTime()/100)*360,0,0))));
 		//m_mainCam.setPosition(glm::vec3(sin(glfwGetTime())*3, 3.0f, cos(glfwGetTime())*3));
 		//m_mainCam.LookAt(glm::vec3(0.0f, 0.f, 0.f));
@@ -121,11 +121,11 @@ void GLFWApplication::Start()
 	m_gizmo = std::make_unique<Graphic::Gizmo>(m_mainCam);
 	WindowSize size = m_window->GetWindowSize();
 	m_mainCam->setProjectionMatrix(glm::radians(70.0f), static_cast<float>(size.width) / size.height, 0.1f, 100000.0f);
-	m_mainCam->setPosition(glm::vec3(0.0f, 0.0f, +10.0f));
-	m_mainCam->setRotation(glm::vec3(0.0f,0.0,0.0f));
+	m_mainCam->setPosition(glm::vec3(-3.0f, 0.0f, 0.0f));
+	m_mainCam->setRotation(glm::vec3(0.0f,0.0f,0.0f));
 
 	transform.SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-	transform.SetRotation(glm::vec3(-45.0f, 0.0f, -45.0f));
+	transform.SetRotation(glm::vec3(0.0f, 45.0f, 0.0f));
 
 	
 
@@ -139,55 +139,58 @@ void GLFWApplication::Start()
 void GLFWApplication::OnKeyEvent(int key, int scancode, int action, int mods)
 {
 	glm::vec3 rot(0.0f);
-	if (key == GLFW_KEY_UP && action == GLFW_PRESS) {
+	if (key == GLFW_KEY_UP) {
 
 		rot.x = 3.0f;
 	}	
-	if (key == GLFW_KEY_DOWN && action == GLFW_PRESS) {
+	if (key == GLFW_KEY_DOWN) {
 
 		rot.x = -3.0f;
 	}	
-	if (key == GLFW_KEY_LEFT && action == GLFW_PRESS) {
+	if (key == GLFW_KEY_LEFT) {
 
 		rot.y = 3.0f;
 	}	
-	if (key == GLFW_KEY_RIGHT && action == GLFW_PRESS) {
+	if (key == GLFW_KEY_RIGHT) {
 		rot.y = -3.0f;
 	}
-	if (key == GLFW_KEY_Z && action == GLFW_PRESS) {
+	if (key == GLFW_KEY_Z) {
 
 		rot.z = 3.0f;
 	}	
-	if (key == GLFW_KEY_X && action == GLFW_PRESS) {
+	if (key == GLFW_KEY_X) {
 		rot.z = -3.0f;
 	}
-	m_mainCam->rotate(rot);
 
 
 	glm::vec3 dir(0.0f);
-	if (key == GLFW_KEY_W && action == GLFW_PRESS) {
+	if (key == GLFW_KEY_W) {
 
 		dir.z = 1.0f;
 	}	
-	if (key == GLFW_KEY_S && action == GLFW_PRESS) {
+	if (key == GLFW_KEY_S) {
 
 		dir.z = -1.0f;
 	}	
-	if (key == GLFW_KEY_A && action == GLFW_PRESS) {
+	if (key == GLFW_KEY_A) {
 
 		dir.x = -1.0f;
 	}	
-	if (key == GLFW_KEY_D && action == GLFW_PRESS) {
+	if (key == GLFW_KEY_D) {
 		dir.x = 1.0f;
 	}
-	if (key == GLFW_KEY_E && action == GLFW_PRESS) {
+	if (key == GLFW_KEY_E) {
 
 		dir.y = -1.0f;
 	}	
-	if (key == GLFW_KEY_Q && action == GLFW_PRESS) {
+	if (key == GLFW_KEY_Q) {
 		dir.y = 1.0f;
 	}
-	m_mainCam->translate(dir);
+	if (action == GLFW_PRESS)
+	{
+		m_mainCam->rotate(rot);
+		m_mainCam->translate(dir);
+	}
 
 }
 

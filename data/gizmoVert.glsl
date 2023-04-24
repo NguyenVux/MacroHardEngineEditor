@@ -1,10 +1,14 @@
 #version 330 core
-in vec3 position;
+in float length;
+
 out vec4 vert_color;
-uniform vec4 uvert_c;
+
+uniform vec4 axis[3];
 uniform mat4 projectionMatrix;
 void main()
 {
-    gl_Position = projectionMatrix*mat4(1.0)*vec4(position, 1.0);
-    vert_color = uvert_c;
+    vec4 position = length*axis[gl_InstanceID];
+    position.w = 1.0;
+    gl_Position = projectionMatrix*mat4(1.0)*position;
+    vert_color = axis[gl_InstanceID];
 }
